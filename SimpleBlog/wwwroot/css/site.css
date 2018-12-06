@@ -25,6 +25,14 @@
 #qrCode {
     margin: 15px;
 }
+.navbar .profile-picture {
+    line-height: 50px;
+}
+
+.profile-picture img {
+    vertical-align: middle;
+    border-radius: 50%;
+}
 
 /* Hide/rearrange for smaller screens */
 @media screen and (max-width: 767px) {

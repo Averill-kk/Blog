@@ -24,17 +24,21 @@ namespace SimpleBlog.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
+        private readonly IGooglePictureLocator _pictureLocator;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             IEmailSender emailSender,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+            IGooglePictureLocator pictureLocator
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
+            _pictureLocator = pictureLocator;
         }
 
         [TempData]
@@ -311,6 +315,8 @@ namespace SimpleBlog.Controllers
                     throw new ApplicationException("Error loading external login information during confirmation.");
                 }
                 var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                user.FullName = info.Principal.FindFirstValue(ClaimTypes.Name);
+                user.PictureUrl = await _pictureLocator.GetProfilePictureAsync(info);
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {

@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using SimpleBlog.Data;
 using SimpleBlog.Models;
 using SimpleBlog.Services;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace SimpleBlog
 {
@@ -32,8 +34,15 @@ namespace SimpleBlog
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
-
+            services.AddAuthentication().AddGoogle(googleOptions =>
+            {
+                googleOptions.ClientId = Configuration["Authentication:Google:ClientId"];
+                googleOptions.ClientSecret = Configuration["Authentication:Google:ClientSecret"];
+                googleOptions.SaveTokens = true;
+            });
+            services.TryAddSingleton<IActionContextAccessor, ActionContextAccessor>();
             // Add application services.
+            services.AddTransient<IGooglePictureLocator, GooglePictureLocator>();
             services.AddTransient<IEmailSender, EmailSender>();
 
             services.AddMvc();

@@ -1,0 +1,12 @@
+﻿@model SimpleBlog.Models.Article
+<div class="article-page container">
+    <div class="col-md-8 article-details">
+        @Html.Partial("_ArticleSummary", Model)
+        <hr />
+        <p>@Model.Contents</p>
+    </div>
+
+    <div class="col-md-4">
+        @* button group *@
+    </div>
+</div>

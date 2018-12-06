@@ -11,9 +11,10 @@ using System;
 namespace SimpleBlog.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181130041908_first")]
+    partial class first
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,31 +184,6 @@ namespace SimpleBlog.Data.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("SimpleBlog.Models.Article", b =>
-                {
-                    b.Property<int>("ArticleId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("Abstract")
-                        .IsRequired();
-
-                    b.Property<string>("AuthorId");
-
-                    b.Property<string>("Contents")
-                        .IsRequired();
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<string>("Title")
-                        .IsRequired();
-
-                    b.HasKey("ArticleId");
-
-                    b.HasIndex("AuthorId");
-
-                    b.ToTable("Article");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
@@ -251,13 +227,6 @@ namespace SimpleBlog.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SimpleBlog.Models.Article", b =>
-                {
-                    b.HasOne("SimpleBlog.Models.ApplicationUser", "Author")
-                        .WithMany()
-                        .HasForeignKey("AuthorId");
                 });
 #pragma warning restore 612, 618
         }

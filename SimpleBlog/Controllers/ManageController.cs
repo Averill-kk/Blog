@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
@@ -25,6 +26,7 @@ namespace SimpleBlog.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
         private readonly UrlEncoder _urlEncoder;
+        private readonly IGooglePictureLocator _pictureLocator;
 
         private const string AuthenticatorUriFormat = "otpauth://totp/{0}:{1}?secret={2}&issuer={0}&digits=6";
         private const string RecoveryCodesKey = nameof(RecoveryCodesKey);
@@ -34,13 +36,15 @@ namespace SimpleBlog.Controllers
           SignInManager<ApplicationUser> signInManager,
           IEmailSender emailSender,
           ILogger<ManageController> logger,
-          UrlEncoder urlEncoder)
+          UrlEncoder urlEncoder, 
+          IGooglePictureLocator pictureLocator)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _urlEncoder = urlEncoder;
+            _pictureLocator= pictureLocator;
         }
 
         [TempData]
@@ -262,6 +266,7 @@ namespace SimpleBlog.Controllers
         public async Task<IActionResult> LinkLoginCallback()
         {
             var user = await _userManager.GetUserAsync(User);
+
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
@@ -278,7 +283,9 @@ namespace SimpleBlog.Controllers
             {
                 throw new ApplicationException($"Unexpected error occurred adding external login for user with ID '{user.Id}'.");
             }
-
+            user.FullName = info.Principal.FindFirstValue(ClaimTypes.Name);
+            user.PictureUrl = await _pictureLocator.GetProfilePictureAsync(info);
+            await _userManager.UpdateAsync(user);
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
